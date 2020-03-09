@@ -1,7 +1,7 @@
 ###----------------------MSH Rightsourcing
 
 #Rightsource file needs to be "eport table" format. Can include all sites
-rightsourcing <- function(dateRSfilename,JCfilename){
+rightsourcing <- function(date){
   setwd("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSH")
   #read current job code list
   jc <- read.csv("Rightsource Job Code.csv",stringsAsFactors = F,header=F)
