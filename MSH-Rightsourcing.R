@@ -14,7 +14,7 @@ rightsourcing <- function(Site){
   message("Select Site's most recent zero file")
   previous_zero <- read.csv(file.choose(),stringsAsFactors = F, header = F)
   previous_zero$V6 <- anytime(previous_zero$V6)
-  #Read in Site's previous month upload
+  #Read in Site's previous 2 month upload
   message("Select Site's most recent Rightsourcing upload")
   previous_site <- read.csv(file.choose(),stringsAsFactors = F, header = F)
   previous_site$V6 <- anytime(previous_site$V6)
@@ -183,10 +183,11 @@ system <- function(){
 }
 ##Create save function for system and site exports if they exist
 save <- function(){
+  library(anytime)
   #save system and site exports if they exist
   if(exists("sys_export")){
-    start <- min(anytime(sys_export$V7))
-    end <- max(anytime(sys_export$V7))
+    start <- min(anytime(sys_export$start))
+    end <- max(anytime(sys_export$end))
     library(lubridate)
     smonth <- toupper(month.abb[month(start)])
     emonth <- toupper(month.abb[month(end)])
@@ -199,8 +200,8 @@ save <- function(){
     write.table(sys_export,file=name,sep=",",col.names=F,row.names=F)
   }
   if(exists("export1")){
-    start <- min(anytime(export1$V7))
-    end <- max(anytime(export1$V7))
+    start <- min(anytime(export1$start))
+    end <- max(anytime(export1$end))
     library(lubridate)
     smonth <- toupper(month.abb[month(start)])
     emonth <- toupper(month.abb[month(end)])
@@ -213,8 +214,8 @@ save <- function(){
     write.table(export1,file=name,sep=",",col.names=F,row.names=F)
   } 
   if(exists("export2")){
-    start <- min(anytime(export2$V7))
-    end <- max(anytime(export2$V7))
+    start <- min(anytime(export2$start))
+    end <- max(anytime(export2$end))
     library(lubridate)
     smonth <- toupper(month.abb[month(start)])
     emonth <- toupper(month.abb[month(end)])
@@ -228,7 +229,7 @@ save <- function(){
   }
   #save system and site zero if they exist
   if(exists("sys_zero")){
-    start <- min(anytime(sys_zero$V7))
+    start <- min(anytime(sys_zero$V6))
     end <- max(anytime(sys_zero$V7))
     library(lubridate)
     smonth <- toupper(month.abb[month(start)])
@@ -242,7 +243,7 @@ save <- function(){
     write.table(sys_zero,file=name,sep=",",col.names=F,row.names=F)
   }
   if(exists("zero1")){
-    start <- min(anytime(zero1$V7))
+    start <- min(anytime(zero1$V6))
     end <- max(anytime(zero1$V7))
     library(lubridate)
     smonth <- toupper(month.abb[month(start)])
@@ -256,7 +257,7 @@ save <- function(){
     write.table(zero1,file=name,sep=",",col.names=F,row.names=F)
   } 
   if(exists("zero2")){
-    start <- min(anytime(zero2$V7))
+    start <- min(anytime(zero2$V6))
     end <- max(anytime(zero2$V7))
     library(lubridate)
     smonth <- toupper(month.abb[month(start)])
@@ -271,38 +272,35 @@ save <- function(){
   }
   #save system and site jcdict if they exist
   if(exists("sys_jcdict")){
-    date <- anytime(Sys.Date())
+    date <- as.Date(Sys.Date(), format = "%Y-%m-%d")
     library(lubridate)
     month <- toupper(month.abb[month(date)])
-    day <- format(as.date(date, formate = "%Y-%m-%d"), format="%d")
+    day <- format(as.Date(date, formate = "%Y-%m-%d"), format="%d")
     year <- substr(date, start=1, stop=4)
     name <- paste0("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSHS/JCdict/",
                    "MSHS_Job Code Dictionary_",day,month,year,".csv")
     write.table(sys_jcdict,file=name,sep=",",col.names=F,row.names=F)
   }
   if(exists("jcdict1")){
-    date <- anytime(Sys.Date())
+    date <- as.Date(Sys.Date(), format = "%Y-%m-%d")
     library(lubridate)
     month <- toupper(month.abb[month(date)])
-    day <- format(as.date(date, formate = "%Y-%m-%d"), format="%d")
+    day <- format(as.Date(date, formate = "%Y-%m-%d"), format="%d")
     year <- substr(date, start=1, stop=4)
     name <- paste0("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSH/JCdict/",
                    "MSH_Job Code Dictionary_",day,month,year,".csv")
     write.table(jcdict1,file=name,sep=",",col.names=F,row.names=F)
   }
   if(exists("jcdict2")){
-    date <- anytime(Sys.Date())
+    date <- as.Date(Sys.Date(), format = "%Y-%m-%d")
     library(lubridate)
     month <- toupper(month.abb[month(date)])
-    day <- format(as.date(date, formate = "%Y-%m-%d"), format="%d")
+    day <- format(as.Date(date, formate = "%Y-%m-%d"), format="%d")
     year <- substr(date, start=1, stop=4)
     name <- paste0("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSBI/JCdict/",
                    "MSBI_Job Code Dictionary_",day,month,year,".csv")
     write.table(jcdict2,file=name,sep=",",col.names=F,row.names=F)
   }
-  #Overwrit Jobcode table
-  setwd("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/")
-  write.table(jc,file="Rightsource Job Code.csv",sep=",",col.names=F,row.names=F)
 }
 
 ##################################################################################################
