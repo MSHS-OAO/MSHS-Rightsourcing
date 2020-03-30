@@ -4,7 +4,7 @@
 message("Select most recent raw file")
 right <- read.csv(file.choose(), fileEncoding = "UTF-16LE",sep='\t',header=T,stringsAsFactors = F)
 
-#################################################################################################
+##################################################################################################
 
 #Site based function to create site based payroll, zero and jc dictionary
 rightsourcing <- function(Site){
@@ -55,8 +55,10 @@ rightsourcing <- function(Site){
   ###########Create site level job code dictionary
   right$`EarningsE/D` <- anytime(right$`EarningsE/D`)
   right <- right[right$`EarningsE/D` > max_zero & right$Location == Loc,]
+  
   #replace workers name with just their last name
-  right$Worker <- gsub(",.*$","",right$Worker)
+  #right$Worker <- gsub(",.*$","",right$Worker)
+  
   #add "Rightsource" to the the job title
   right$JobTitle <- paste("Rightsourcing",right$JobTitle,sep=" ")
   #subset all rows with new job codes
@@ -119,7 +121,7 @@ rightsourcing <- function(Site){
   
   ###########Create site level job code dictionary
   if(i == 1){
-    export1 <-  data.frame(partner="729805",hospital=Hosp,home=substr(right$Dept,start=1,stop=8),
+    export1 <-  data.frame(partner="729805",hospital=Hosp,home="01010101",
                            hosp=Hosp,work=substr(right$Dept,start=1,stop=8),start=as.Date(right$`EarningsE/D`)-6,
                            end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),gsub("//..*","",right$Hours)),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
@@ -142,7 +144,7 @@ rightsourcing <- function(Site){
       str_sub(right$Dept[str_length(right$Dept)==32], 14, 15),
       str_sub(right$Dept[str_length(right$Dept)==32], 17, 20))
     
-    export2 <-  data.frame(partner="729805",hospital=Hosp,home=right$Dept,
+    export2 <-  data.frame(partner="729805",hospital=Hosp,home="1010101010",
                            hosp=Hosp,work=right$Dept,start=as.Date(right$`EarningsE/D`)-6,
                            end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),gsub("//..*","",right$Hours)),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
