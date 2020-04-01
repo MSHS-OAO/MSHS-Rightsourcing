@@ -124,7 +124,7 @@ rightsourcing <- function(Site){
     library(stringr)
     export1 <-  data.frame(partner="729805",hospital=Hosp,home="01010101",
                            hosp=Hosp,work=substr(right$Dept,start=1,stop=8),start=as.Date(right$`EarningsE/D`)-6,
-                           end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Spend,"[^.]+")),
+                           end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
                            hours=right$Hours,spend=right$Spend)
     export1$EmpCode <- substr(export1$EmpCode,start=1,stop=15)
@@ -148,7 +148,7 @@ rightsourcing <- function(Site){
     
     export2 <-  data.frame(partner="729805",hospital=Hosp,home="1010101010",
                            hosp=Hosp,work=right$Dept,start=as.Date(right$`EarningsE/D`)-6,
-                           end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Spend,"[^.]+")),
+                           end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
                            hours=right$Hours,spend=right$Spend)
     export2$EmpCode <- substr(export2$EmpCode,start=1,stop=15)
