@@ -57,7 +57,7 @@ rightsourcing <- function(Site){
   right <- right[right$`EarningsE/D` > max_zero & right$Location == Loc,]
   
   #replace workers name with just their last name
-  #right$Worker <- gsub(",.*$","",right$Worker)
+  right$Worker <- gsub(",.*$","",right$Worker)
   
   #add "Rightsource" to the the job title
   right$JobTitle <- paste("Rightsourcing",right$JobTitle,sep=" ")
@@ -121,11 +121,13 @@ rightsourcing <- function(Site){
   
   ###########Create site level job code dictionary
   if(i == 1){
+    library(stringr)
     export1 <-  data.frame(partner="729805",hospital=Hosp,home="01010101",
                            hosp=Hosp,work=substr(right$Dept,start=1,stop=8),start=as.Date(right$`EarningsE/D`)-6,
-                           end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),gsub("//..*","",right$Hours)),
+                           end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Spend,"[^.]+")),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
-                           hours=right$Hours,spend=right$Spend) 
+                           hours=right$Hours,spend=right$Spend)
+    export1$EmpCode <- substr(export1$EmpCode,start=1,stop=15)
     export1$start <- paste(substr(export1$start,start=6,stop=7),"/",substr(export1$start,start=9,stop=10),
                            "/",substr(export1$start,start=1,stop=4),sep="")
     export1$end <- paste(substr(export1$end,start=6,stop=7),"/",substr(export1$end,start=9,stop=10),
@@ -146,9 +148,10 @@ rightsourcing <- function(Site){
     
     export2 <-  data.frame(partner="729805",hospital=Hosp,home="1010101010",
                            hosp=Hosp,work=right$Dept,start=as.Date(right$`EarningsE/D`)-6,
-                           end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),gsub("//..*","",right$Hours)),
+                           end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Spend,"[^.]+")),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
                            hours=right$Hours,spend=right$Spend)
+    export2$EmpCode <- substr(export2$EmpCode,start=1,stop=15)
     export2$start <- paste(substr(export2$start,start=6,stop=7),"/",substr(export2$start,start=9,stop=10),
                            "/",substr(export2$start,start=1,stop=4),sep="")
     export2$end <- paste(substr(export2$end,start=6,stop=7),"/",substr(export2$end,start=9,stop=10),
