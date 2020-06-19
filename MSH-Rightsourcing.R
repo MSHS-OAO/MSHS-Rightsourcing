@@ -3,7 +3,7 @@
 #Read raw excel file from rightsourcing - file needs to be "export table" format
 message("Select most recent raw file")
 right <- read.csv(file.choose(), fileEncoding = "UTF-16LE",sep='\t',header=T,stringsAsFactors = F)
-#right <- read.csv(file.choose(),header=T,stringsAsFactors = F)
+
 ##################################################################################################
 
 #Site based function to create site based payroll, zero and jc dictionary
@@ -46,9 +46,7 @@ rightsourcing <- function(Site){
   colnames(right) <- c("Quarter",	"Months",	"ServiceLine",	"Worker",	"Manager",	"Supplier",
                        "JobTitle",	"JobCategory",	"JobClass",	"ClientBill Rate",	"Dept",
                        "DeptLvl1","NewFill?","DeptLvl 2",	"Location",	"Hours",	"Spend",	"EarningsE/D",
-                       "AllOtherSpend",	"OTSpend"
-                       #,"COVID19 Worker", "COVID19 Spend", "Year"
-                       )
+                       "AllOtherSpend",	"OTSpend","COVID19 Worker", "COVID19 Spend", "Year")
   
   #replace N/A job titles with unkown job title
   right <- tibble::as_tibble(right)
@@ -64,10 +62,6 @@ rightsourcing <- function(Site){
     mutate(`EarningsE/D` = anytime(`EarningsE/D`)) %>%
     filter(`EarningsE/D` > max_zero,
            Location == Loc)
-  
-  ##################################################################
-  #we have to manually filter end dates in May for April upload here
-  ##################################################################
   
   ###########Create site level job code dictionary
   #replace workers name with just their last name
@@ -164,7 +158,7 @@ rightsourcing <- function(Site){
   #essentially assigns jobcode based on job title
   right <- merge(right,jc,by="JobTitle")
   
-  ###########Create site level job code dictionary
+  ###########Create Site level upload
   if(i == 1){
     #MSH
     library(stringr)
