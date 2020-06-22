@@ -6,9 +6,14 @@ right <- read.csv(file.choose(), fileEncoding = "UTF-16LE",sep='\t',header=T,str
 
 ##################################################################################################
 #Create empty list for all dictionaries
-dict <- vector(mode = "list")
+dict <- vector(mode = "list", length = 4)
+names(dict) <- c("MSH","MSBI","MSQ","MSB")
 #Create empty list for all rightsourcing exports
-export <- vector(mode = "list")
+export <- vector(mode = "list", length = 4)
+names(export) <- c("MSH","MSBI","MSQ","MSB")
+#Create empty list for all zero tables
+zero <- vector(mode = "list", length = 4)
+names(zero) <- c("MSH","MSBI","MSQ","MSB")
 
 #Site based function to create site based payroll, zero and jc dictionary
 rightsourcing <- function(Site){
@@ -75,7 +80,7 @@ rightsourcing <- function(Site){
   #subset all rows with new job codes
   newright <- subset(right,!(right$JobTitle %in% jc$JobTitle))
   #create jobcode dictionary if there are new jobcodes
-  if(nrow(newright != 0)){
+  if(nrow(newright) != 0){
     if(i == 1){
       #MSH
       jcdict1 <<- newright %>% 
@@ -143,7 +148,7 @@ rightsourcing <- function(Site){
                            hosp=Hosp,work=substr(right$Dept,start=1,stop=8),start=as.Date(right$`EarningsE/D`)-6,
                            end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
-                           hours=right$Hours,spend=right$Spend,jobdescrition=right$JobTitle)
+                           hours=right$Hours,spend=right$Spend,JobTitle=right$JobTitle)
     export1$EmpCode <- substr(export1$EmpCode,start=1,stop=15)
     export1$start <- paste(substr(export1$start,start=6,stop=7),"/",substr(export1$start,start=9,stop=10),
                            "/",substr(export1$start,start=1,stop=4),sep="")
@@ -170,7 +175,7 @@ rightsourcing <- function(Site){
                            hosp=Hosp,work=right$Dept,start=as.Date(right$`EarningsE/D`)-6,
                            end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
-                           hours=right$Hours,spend=right$Spend,jobdescrition=right$JobTitle)
+                           hours=right$Hours,spend=right$Spend,JobTitle=right$JobTitle)
     export2$EmpCode <- substr(export2$EmpCode,start=1,stop=15)
     export2$start <- paste(substr(export2$start,start=6,stop=7),"/",substr(export2$start,start=9,stop=10),
                            "/",substr(export2$start,start=1,stop=4),sep="")
@@ -186,7 +191,7 @@ rightsourcing <- function(Site){
                            hosp=Hosp,work=substr(right$Dept,start=1,stop=8),start=as.Date(right$`EarningsE/D`)-6,
                            end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
-                           hours=right$Hours,spend=right$Spend,jobdescrition=right$JobTitle)
+                           hours=right$Hours,spend=right$Spend,JobTitle=right$JobTitle)
     export3$EmpCode <- substr(export3$EmpCode,start=1,stop=15)
     export3$start <- paste(substr(export3$start,start=6,stop=7),"/",substr(export3$start,start=9,stop=10),
                            "/",substr(export3$start,start=1,stop=4),sep="")
@@ -213,7 +218,7 @@ rightsourcing <- function(Site){
                            hosp=Hosp,work=right$Dept,start=as.Date(right$`EarningsE/D`)-6,
                            end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
-                           hours=right$Hours,spend=right$Spend,jobdescrition=right$JobTitle)
+                           hours=right$Hours,spend=right$Spend,JobTitle=right$JobTitle)
     export4$EmpCode <- substr(export4$EmpCode,start=1,stop=15)
     export4$start <- paste(substr(export4$start,start=6,stop=7),"/",substr(export4$start,start=9,stop=10),
                            "/",substr(export4$start,start=1,stop=4),sep="")
@@ -232,6 +237,8 @@ rightsourcing <- function(Site){
     zero1$V6 <- paste(substr(zero1$V6,start=6,stop=7),"/",substr(zero1$V6,start=9,stop=10),
                       "/",substr(zero1$V6,start=1,stop=4),sep="")
     zero1 <<- zero1
+    zero[[i]] <- zero1
+    zero <<- zero
   } else if(i == 2){
     #MSBI
     zero2 <- previous_site[previous_site$V6 > max_zero,]
@@ -239,6 +246,8 @@ rightsourcing <- function(Site){
     zero2$V6 <- paste(substr(zero2$V6,start=6,stop=7),"/",substr(zero2$V6,start=9,stop=10),
                       "/",substr(zero2$V6,start=1,stop=4),sep="")
     zero2 <<- zero2
+    zero[[i]] <- zero2
+    zero <<- zero
   } else if(i == 3){
     #MSQ
     zero3 <- previous_site[previous_site$V6 > max_zero,]
@@ -246,6 +255,8 @@ rightsourcing <- function(Site){
     zero3$V6 <- paste(substr(zero3$V6,start=6,stop=7),"/",substr(zero3$V6,start=9,stop=10),
                       "/",substr(zero3$V6,start=1,stop=4),sep="")
     zero3 <<- zero3
+    zero[[i]] <- zero3
+    zero <<- zero
   } else if(i == 4){
     #MSB
     zero4 <- previous_site[previous_site$V6 > max_zero,]
@@ -253,50 +264,65 @@ rightsourcing <- function(Site){
     zero4$V6 <- paste(substr(zero4$V6,start=6,stop=7),"/",substr(zero4$V6,start=9,stop=10),
                       "/",substr(zero4$V6,start=1,stop=4),sep="")
     zero4 <<- zero4
+    zero[[i]] <- zero4
+    zero <<- zero
     }
 }
 #function to compare all new job titles and properly append job list/create jobcode dictionaries
 dictionary <- function(){
-  sys_dict = do.call("rbind",dict)
-  sys_jc <- codes <- sys_dict %>% 
-    select(JobTitle) %>%
-    distinct()
+  setwd("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/")
   jc <- read.csv("Rightsource Job Code.csv",stringsAsFactors = F,header=F)
   colnames(jc) <- c("JobTitle","JobCode")
-  if(nrow(sys_jc) != 0){
-    newjobs <- as.vector(sys_jc$JobTitle)
-    a <- nrow(jc)
-    for(j in a+1:length(newjobs)){
-      #append with job title and job code for all new jobs
-      #if job is over the 99th job, adjust the coding scheme
-      jc[j,] <- list(newjobs[j-a],if(j>99){
-        paste("R00",j,sep="")
-      }else{
-        paste("R000",j,sep="")
-      })
+  sys_dict = do.call("rbind",dict)
+  if(!is.null(sys_dict)){
+    sys_jc <- codes <- sys_dict %>% 
+      select(JobTitle) %>%
+      distinct()
+    if(nrow(sys_jc) != 0){
+      newjobs <- as.vector(sys_jc$JobTitle)
+      a <- nrow(jc)
+      for(j in a+1:length(newjobs)){
+        #append with job title and job code for all new jobs
+        #if job is over the 99th job, adjust the coding scheme
+        jc[j,] <- list(newjobs[j-a],if(j>99){
+          paste("R00",j,sep="")
+        }else{
+          paste("R000",j,sep="")
+        })
+      }
+      #Overwrite Jobcode table
+      #setwd("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/")
+      #write.table(jc,file="Rightsource Job Code.csv",sep=",",col.names=F,row.names=F)
     }
-    #Overwrite Jobcode table
-    #setwd("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/")
-    #write.table(jc,file="Rightsource Job Code.csv",sep=",",col.names=F,row.names=F)
-  }
-  if(length(dict) > 0){
     for(x in 1:length(dict)){
-      dict[[x]] <- left_join(dict[[x]],jc,by=c("JobTitle")) %>%
-        select(SYSTEM,HOSP,Dept,JobCode,JobTitle)
-      dict <<- dict
+      if(!is.null(dict[[x]])){
+        dict[[x]] <- left_join(dict[[x]],jc,by=c("JobTitle")) %>%
+          select(SYSTEM,HOSP,Dept,JobCode,JobTitle)
+        dict <<- dict
+      }
+    }
+  }
+  for(y in 1:length(export)){
+    if(!is.null(export[[y]])){
+      export[[y]] <- left_join(export[[y]],jc,by=c("JobTitle")) %>%
+        select(partner,hospital,home,hosp,work,start,end,EmpCode,name,budget,16,paycode,hours,spend)
+      export <<- export
     }
   }
 }
 #system function combines site based payroll, zero and jc dictionary exports in system level
 system <- function(){
-  if(exists("export1") & exists("export2") & exists("export3") & exists("export4")){
-    sys_export <<- rbind(export1,export2,export3,export4)
+  if(length(export) != 0){
+    sys_export = do.call("rbind",export)
+    sys_export <<- sys_export
   }
-  if(exists("jcdict1") & exists("jcdict2") & exists("jcdict3") & exists("jcdict4")){
-    sys_jcdict <<- rbind(jcdict1,jcdict2,jcdict3,jcdict4)
+  if(length(dict) != 0){
+    sys_jcdict = do.call("rbind",dict)
+    sys_jcdict <<- sys_jcdict
   }
-  if(exists("zero1") & exists("zero2") & exists("zero3") & exists("zero4")){
-    sys_zero <<- rbind(zero1,zero2,zero3,zero4)
+  if(length(zero) != 0){
+    sys_zero = do.call("rbind",zero)
+    sys_zero <<- sys_zero
   }
 }
 ##Create save function for system and site exports if they exist
@@ -317,9 +343,9 @@ save <- function(){
                    "MSHS_Rightsourcing_",sday,smonth,syear," to ",eday,emonth,eyear,".csv")
     write.table(sys_export,file=name,sep=",",col.names=F,row.names=F)
   }
-  if(exists("export1")){
-    start <- min(anytime(export1$start))
-    end <- max(anytime(export1$end))
+  if(is.data.frame(export[[1]])){
+    start <- min(anytime(export[[1]]$start))
+    end <- max(anytime(export[[1]]$end))
     library(lubridate)
     smonth <- toupper(month.abb[month(start)])
     emonth <- toupper(month.abb[month(end)])
@@ -329,11 +355,11 @@ save <- function(){
     eyear <- substr(end, start=1, stop=4)
     name <- paste0("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSH/",
                    "MSH_Rightsourcing_",sday,smonth,syear," to ",eday,emonth,eyear,".csv")
-    write.table(export1,file=name,sep=",",col.names=F,row.names=F)
+    write.table(export[[1]],file=name,sep=",",col.names=F,row.names=F)
   } 
-  if(exists("export2")){
-    start <- min(anytime(export2$start))
-    end <- max(anytime(export2$end))
+  if(is.data.frame(export[[2]])){
+    start <- min(anytime(export[[2]]$start))
+    end <- max(anytime(export[[2]]$end))
     library(lubridate)
     smonth <- toupper(month.abb[month(start)])
     emonth <- toupper(month.abb[month(end)])
@@ -343,11 +369,11 @@ save <- function(){
     eyear <- substr(end, start=1, stop=4)
     name <- paste0("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSBI/",
                    "MSBI_Rightsourcing_",sday,smonth,syear," to ",eday,emonth,eyear,".csv")
-    write.table(export2,file=name,sep=",",col.names=F,row.names=F)
+    write.table(export[[2]],file=name,sep=",",col.names=F,row.names=F)
   }
-  if(exists("export3")){
-    start <- min(anytime(export3$start))
-    end <- max(anytime(export3$end))
+  if(is.data.frame(export[[3]])){
+    start <- min(anytime(export[[3]]$start))
+    end <- max(anytime(export[[3]]$end))
     library(lubridate)
     smonth <- toupper(month.abb[month(start)])
     emonth <- toupper(month.abb[month(end)])
@@ -357,11 +383,11 @@ save <- function(){
     eyear <- substr(end, start=1, stop=4)
     name <- paste0("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSQ/",
                    "MSQ_Rightsourcing_",sday,smonth,syear," to ",eday,emonth,eyear,".csv")
-    write.table(export3,file=name,sep=",",col.names=F,row.names=F)
+    write.table(export[[3]],file=name,sep=",",col.names=F,row.names=F)
   }
-  if(exists("export4")){
-    start <- min(anytime(export4$start))
-    end <- max(anytime(export4$end))
+  if(is.data.frame(export[[4]])){
+    start <- min(anytime(export[[4]]$start))
+    end <- max(anytime(export[[4]]$end))
     library(lubridate)
     smonth <- toupper(month.abb[month(start)])
     emonth <- toupper(month.abb[month(end)])
@@ -371,7 +397,7 @@ save <- function(){
     eyear <- substr(end, start=1, stop=4)
     name <- paste0("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSB/",
                    "MSB_Rightsourcing_",sday,smonth,syear," to ",eday,emonth,eyear,".csv")
-    write.table(export4,file=name,sep=",",col.names=F,row.names=F)
+    write.table(export[[4]],file=name,sep=",",col.names=F,row.names=F)
   }
   #save system and site zero if they exist
   if(exists("sys_zero")){
@@ -388,9 +414,9 @@ save <- function(){
                    "MSHS_Rightsourcing Zero_",sday,smonth,syear," to ",eday,emonth,eyear,".csv")
     write.table(sys_zero,file=name,sep=",",col.names=F,row.names=F)
   }
-  if(exists("zero1")){
-    start <- min(anytime(zero1$V6))
-    end <- max(anytime(zero1$V7))
+  if(is.data.frame(zero[[1]])){
+    start <- min(anytime(zero[[1]]$V6))
+    end <- max(anytime(zero[[1]]$V7))
     library(lubridate)
     smonth <- toupper(month.abb[month(start)])
     emonth <- toupper(month.abb[month(end)])
@@ -400,11 +426,11 @@ save <- function(){
     eyear <- substr(end, start=1, stop=4)
     name <- paste0("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSH/Zero/",
                    "MSH_Rightsourcing Zero_",sday,smonth,syear," to ",eday,emonth,eyear,".csv")
-    write.table(zero1,file=name,sep=",",col.names=F,row.names=F)
+    write.table(zero[[1]],file=name,sep=",",col.names=F,row.names=F)
   } 
-  if(exists("zero2")){
-    start <- min(anytime(zero2$V6))
-    end <- max(anytime(zero2$V7))
+  if(is.data.frame(zero[[2]])){
+    start <- min(anytime(zero[[2]]$V6))
+    end <- max(anytime(zero[[2]]$V7))
     library(lubridate)
     smonth <- toupper(month.abb[month(start)])
     emonth <- toupper(month.abb[month(end)])
@@ -414,11 +440,11 @@ save <- function(){
     eyear <- substr(end, start=1, stop=4)
     name <- paste0("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSBI/Zero/",
                    "MSBI_Rightsourcing Zero_",sday,smonth,syear," to ",eday,emonth,eyear,".csv")
-    write.table(zero2,file=name,sep=",",col.names=F,row.names=F)
+    write.table(zero[[2]],file=name,sep=",",col.names=F,row.names=F)
   }
-  if(exists("zero3")){
-    start <- min(anytime(zero3$V6))
-    end <- max(anytime(zero3$V7))
+  if(is.data.frame(zero[[3]])){
+    start <- min(anytime(zero[[3]]$V6))
+    end <- max(anytime(zero[[3]]$V7))
     library(lubridate)
     smonth <- toupper(month.abb[month(start)])
     emonth <- toupper(month.abb[month(end)])
@@ -428,11 +454,11 @@ save <- function(){
     eyear <- substr(end, start=1, stop=4)
     name <- paste0("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSQ/Zero/",
                    "MSQ_Rightsourcing Zero_",sday,smonth,syear," to ",eday,emonth,eyear,".csv")
-    write.table(zero3,file=name,sep=",",col.names=F,row.names=F)
+    write.table(zero[[3]],file=name,sep=",",col.names=F,row.names=F)
   }
-  if(exists("zero4")){
-    start <- min(anytime(zero4$V6))
-    end <- max(anytime(zero4$V7))
+  if(is.data.frame(zero[[4]])){
+    start <- min(anytime(zero[[4]]$V6))
+    end <- max(anytime(zero[[4]]$V7))
     library(lubridate)
     smonth <- toupper(month.abb[month(start)])
     emonth <- toupper(month.abb[month(end)])
@@ -442,7 +468,7 @@ save <- function(){
     eyear <- substr(end, start=1, stop=4)
     name <- paste0("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSB/Zero/",
                    "MSB_Rightsourcing Zero_",sday,smonth,syear," to ",eday,emonth,eyear,".csv")
-    write.table(zero4,file=name,sep=",",col.names=F,row.names=F)
+    write.table(zero[[4]],file=name,sep=",",col.names=F,row.names=F)
   }
   #save system and site jcdict if they exist
   if(exists("sys_jcdict")){
@@ -455,7 +481,7 @@ save <- function(){
                    "MSHS_Job Code Dictionary_",day,month,year,".csv")
     write.table(sys_jcdict,file=name,sep=",",col.names=F,row.names=F)
   }
-  if(exists("jcdict1")){
+  if(is.data.frame(dict[[1]])){
     date <- as.Date(Sys.Date(), format = "%Y-%m-%d")
     library(lubridate)
     month <- toupper(month.abb[month(date)])
@@ -463,9 +489,9 @@ save <- function(){
     year <- substr(date, start=1, stop=4)
     name <- paste0("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSH/JCdict/",
                    "MSH_Job Code Dictionary_",day,month,year,".csv")
-    write.table(jcdict1,file=name,sep=",",col.names=F,row.names=F)
+    write.table(dict[[1]],file=name,sep=",",col.names=F,row.names=F)
   }
-  if(exists("jcdict2")){
+  if(is.data.frame(dict[[2]])){
     date <- as.Date(Sys.Date(), format = "%Y-%m-%d")
     library(lubridate)
     month <- toupper(month.abb[month(date)])
@@ -473,9 +499,9 @@ save <- function(){
     year <- substr(date, start=1, stop=4)
     name <- paste0("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSBI/JCdict/",
                    "MSBI_Job Code Dictionary_",day,month,year,".csv")
-    write.table(jcdict2,file=name,sep=",",col.names=F,row.names=F)
+    write.table(dict[[2]],file=name,sep=",",col.names=F,row.names=F)
   }
-  if(exists("jcdict3")){
+  if(is.data.frame(dict[[3]])){
     date <- as.Date(Sys.Date(), format = "%Y-%m-%d")
     library(lubridate)
     month <- toupper(month.abb[month(date)])
@@ -483,9 +509,9 @@ save <- function(){
     year <- substr(date, start=1, stop=4)
     name <- paste0("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSQ/JCdict/",
                    "MSQ_Job Code Dictionary_",day,month,year,".csv")
-    write.table(jcdict3,file=name,sep=",",col.names=F,row.names=F)
+    write.table(dict[[3]],file=name,sep=",",col.names=F,row.names=F)
   }
-  if(exists("jcdict4")){
+  if(is.data.frame(dict[[4]])){
     date <- as.Date(Sys.Date(), format = "%Y-%m-%d")
     library(lubridate)
     month <- toupper(month.abb[month(date)])
@@ -493,7 +519,7 @@ save <- function(){
     year <- substr(date, start=1, stop=4)
     name <- paste0("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSB/JCdict/",
                    "MSB_Job Code Dictionary_",day,month,year,".csv")
-    write.table(jcdict4,file=name,sep=",",col.names=F,row.names=F)
+    write.table(dict[[4]],file=name,sep=",",col.names=F,row.names=F)
   }
 }
 
