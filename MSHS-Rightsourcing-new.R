@@ -291,8 +291,8 @@ dictionary <- function(){
         })
       }
       #Overwrite Jobcode table
-      #setwd("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/")
-      #write.table(jc,file="Rightsource Job Code.csv",sep=",",col.names=F,row.names=F)
+      setwd("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/")
+      write.table(jc,file="Rightsource Job Code.csv",sep=",",col.names=F,row.names=F)
     }
     for(x in 1:length(dict)){
       if(!is.null(dict[[x]])){
