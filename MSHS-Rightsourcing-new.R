@@ -52,9 +52,9 @@ rightsourcing <- function(Site){
   jc <- read.csv("Rightsource Job Code.csv",stringsAsFactors = F,header=F)
   colnames(jc) <- c("JobTitle","JobCode")
   #Column names for raw file
-  colnames(right) <- c("Quarter",	"Months",	"ServiceLine",	"Worker",	"Manager",	"Supplier",
-                       "JobTitle",	"JobCategory",	"JobClass",	"ClientBill Rate",	"Dept",
-                       "DeptLvl1","NewFill?","DeptLvl 2",	"Location",	"Hours",	"Spend",	"EarningsE/D",
+  colnames(right) <- c("Quarter",	"Months",	"Location",	"Dept",	"Earnings.E.D",	"ServiceLine",
+                       "JobTitle",	"JobCategory",	"JobClass",	"Hours",	"Spend",
+                       "Supplier","Worker","Manager",	"ClientBill Rate",	"DeptLvl1",	"NewFill?",	"DeptLvl 2",
                        "AllOtherSpend",	"OTSpend","COVID19 Worker", "COVID19 Spend", "Year")
   
   #replace N/A job titles with unkown job title
@@ -68,8 +68,8 @@ rightsourcing <- function(Site){
   
   ###########filter raw file on proper dates
   right <- right %>% 
-    mutate(`EarningsE/D` = anytime(`EarningsE/D`)) %>%
-    filter(`EarningsE/D` > max_zero,
+    mutate(`Earnings.E.D` = anytime(`Earnings.E.D`)) %>%
+    filter(`Earnings.E.D` > max_zero,
            Location == Loc)
   
   ###########Create site level job code dictionary
@@ -145,8 +145,8 @@ rightsourcing <- function(Site){
     #MSH
     library(stringr)
     export1 <-  data.frame(partner="729805",hospital=Hosp,home="01010101",
-                           hosp=Hosp,work=substr(right$Dept,start=1,stop=8),start=as.Date(right$`EarningsE/D`)-6,
-                           end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
+                           hosp=Hosp,work=substr(right$Dept,start=1,stop=8),start=as.Date(right$`Earnings.E.D`)-6,
+                           end=as.Date(right$`Earnings.E.D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
                            hours=right$Hours,spend=right$Spend,JobTitle=right$JobTitle)
     export1$EmpCode <- substr(export1$EmpCode,start=1,stop=15)
@@ -172,8 +172,8 @@ rightsourcing <- function(Site){
       str_sub(right$Dept[str_length(right$Dept)==32], 17, 20))
     
     export2 <-  data.frame(partner="729805",hospital=Hosp,home="1010101010",
-                           hosp=Hosp,work=right$Dept,start=as.Date(right$`EarningsE/D`)-6,
-                           end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
+                           hosp=Hosp,work=right$Dept,start=as.Date(right$`Earnings.E.D`)-6,
+                           end=as.Date(right$`Earnings.E.D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
                            hours=right$Hours,spend=right$Spend,JobTitle=right$JobTitle)
     export2$EmpCode <- substr(export2$EmpCode,start=1,stop=15)
@@ -188,8 +188,8 @@ rightsourcing <- function(Site){
     #MSQ
     library(stringr)
     export3 <-  data.frame(partner="729805",hospital=Hosp,home="01010102",
-                           hosp=Hosp,work=substr(right$Dept,start=1,stop=8),start=as.Date(right$`EarningsE/D`)-6,
-                           end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
+                           hosp=Hosp,work=substr(right$Dept,start=1,stop=8),start=as.Date(right$`Earnings.E.D`)-6,
+                           end=as.Date(right$`Earnings.E.D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
                            hours=right$Hours,spend=right$Spend,JobTitle=right$JobTitle)
     export3$EmpCode <- substr(export3$EmpCode,start=1,stop=15)
@@ -215,8 +215,8 @@ rightsourcing <- function(Site){
       str_sub(right$Dept[str_length(right$Dept)==32], 17, 20))
     
     export4 <-  data.frame(partner="729805",hospital=Hosp,home="1010101020",
-                           hosp=Hosp,work=right$Dept,start=as.Date(right$`EarningsE/D`)-6,
-                           end=as.Date(right$`EarningsE/D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
+                           hosp=Hosp,work=right$Dept,start=as.Date(right$`Earnings.E.D`)-6,
+                           end=as.Date(right$`Earnings.E.D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
                            hours=right$Hours,spend=right$Spend,JobTitle=right$JobTitle)
     export4$EmpCode <- substr(export4$EmpCode,start=1,stop=15)
