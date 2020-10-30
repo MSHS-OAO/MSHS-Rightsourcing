@@ -2,7 +2,8 @@
 
 #Read raw excel file from rightsourcing - file needs to be "export table" format
 message("Select most recent raw file")
-right <- read.csv(file.choose(), fileEncoding = "UTF-16LE",sep='\t',header=T,stringsAsFactors = F)
+#right <- read.csv(file.choose(), fileEncoding = "UTF-16LE",sep='\t',header=T,stringsAsFactors = F)
+right <- read.csv(file.choose(),header = T,stringsAsFactors = F)
 
 ##################################################################################################
 #Create empty list for all dictionaries
@@ -31,12 +32,14 @@ rightsourcing <- function(Site){
   #if statement to tell code which site we are evaluating
   if(Site == "MSH"){
     i <-  1
+    conversion <- read.csv("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSHQ Code Conversion.csv",colClasses = c("character","character"))
   } else if(Site == "MSBI"){
     i <-  2
   } else if(Site == "MSQ"){
     i <- 3
   } else if(Site == "MSB"){
     i <- 4
+    conversion <- read.csv("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSHQ Code Conversion.csv",colClasses = c("character","character"))
   }
   
   #set location and Hospital ID based on Site input
@@ -87,6 +90,10 @@ rightsourcing <- function(Site){
         mutate(SYSTEM = 729805, HOSP = "NY0014", Dept = substr(Dept,1,8), JC.Description = "") %>%
         select(SYSTEM,HOSP,Dept,JobTitle) %>%
         distinct()
+      jcdict1 <-  jcdict1 %>%
+        left_join(conversion,by=c("Dept"="Dept")) %>%
+        select(SYSTEM,HOSP,Oracle,JobTitle) %>%
+        rename(Dept = Oracle)
       dict[[i]] <- jcdict1
       dict <<- dict
     } else if(i == 2){
@@ -113,6 +120,10 @@ rightsourcing <- function(Site){
         mutate(SYSTEM = 729805, HOSP = "NY0014", Dept = substr(Dept,1,8), JC.Description = "") %>%
         select(SYSTEM,HOSP,Dept,JobTitle) %>%
         distinct()
+      jcdict3 <-  jcdict3 %>%
+        left_join(conversion,by=c("Dept"="Dept")) %>%
+        select(SYSTEM,HOSP,Oracle,JobTitle) %>%
+        rename(Dept = Oracle)
       dict[[i]] <- jcdict3
       dict <<- dict
     } else if(i == 4){
@@ -144,7 +155,7 @@ rightsourcing <- function(Site){
   if(i == 1){
     #MSH
     library(stringr)
-    export1 <-  data.frame(partner="729805",hospital=Hosp,home="01010101",
+    export1 <-  data.frame(partner="729805",hospital=Hosp,home="101010101010101",
                            hosp=Hosp,work=substr(right$Dept,start=1,stop=8),start=as.Date(right$`Earnings.E.D`)-6,
                            end=as.Date(right$`Earnings.E.D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
@@ -154,6 +165,13 @@ rightsourcing <- function(Site){
                            "/",substr(export1$start,start=1,stop=4),sep="")
     export1$end <- paste(substr(export1$end,start=6,stop=7),"/",substr(export1$end,start=9,stop=10),
                          "/",substr(export1$end,start=1,stop=4),sep="")
+    export1$work <- as.character(export1$work)
+    export1 <- export1 %>%
+      left_join(conversion,by=c("work" = "Dept")) %>%
+      select(c(1:4,16,6:15)) %>%
+      rename(work = Oracle) %>%
+      filter(!is.na(work),
+             work != "DELETE")
     export1 <<- export1
     export[[i]] <- export1
     export <<- export
@@ -197,6 +215,13 @@ rightsourcing <- function(Site){
                            "/",substr(export3$start,start=1,stop=4),sep="")
     export3$end <- paste(substr(export3$end,start=6,stop=7),"/",substr(export3$end,start=9,stop=10),
                          "/",substr(export3$end,start=1,stop=4),sep="")
+    export3$work <- as.character(export3$work)
+    export3 <- export3 %>%
+      left_join(conversion,by=c("work" = "Dept")) %>%
+      select(c(1:4,16,6:15)) %>%
+      rename(work = Oracle) %>%
+      filter(!is.na(work),
+             work != "DELETE")
     export3 <<- export3
     export[[i]] <- export3
     export <<- export
