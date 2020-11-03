@@ -37,9 +37,9 @@ rightsourcing <- function(Site){
     i <-  2
   } else if(Site == "MSQ"){
     i <- 3
+    conversion <- read.csv("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSHQ Code Conversion.csv",colClasses = c("character","character"))
   } else if(Site == "MSB"){
     i <- 4
-    conversion <- read.csv("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSHQ Code Conversion.csv",colClasses = c("character","character"))
   }
   
   #set location and Hospital ID based on Site input
