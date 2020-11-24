@@ -2,8 +2,8 @@
 
 #Read raw excel file from rightsourcing - file needs to be "export table" format
 message("Select most recent raw file")
-#right <- read.csv(file.choose(), fileEncoding = "UTF-16LE",sep='\t',header=T,stringsAsFactors = F)
-right <- read.csv(file.choose(),header = T,stringsAsFactors = F)
+right <- read.csv(file.choose(), fileEncoding = "UTF-16LE",sep='\t',header=T,stringsAsFactors = F)
+#right <- read.csv(file.choose(),header = T,stringsAsFactors = F)
 
 ##################################################################################################
 #Create empty list for all dictionaries
@@ -205,7 +205,7 @@ rightsourcing <- function(Site){
   } else if(i==3){
     #MSQ
     library(stringr)
-    export3 <-  data.frame(partner="729805",hospital=Hosp,home="01010102",
+    export3 <-  data.frame(partner="729805",hospital=Hosp,home="101010101010102",
                            hosp=Hosp,work=substr(right$Dept,start=1,stop=8),start=as.Date(right$`Earnings.E.D`)-6,
                            end=as.Date(right$`Earnings.E.D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
