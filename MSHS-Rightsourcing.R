@@ -1,5 +1,8 @@
 ###----------------------MSHS Rightsourcing
 
+library(anytime)
+library(tidyr)
+
 #Read raw excel file from rightsourcing - file needs to be "export table" format
 message("Select most recent raw file")
 right <- read.csv(file.choose(), fileEncoding = "UTF-16LE",sep='\t',header=T,stringsAsFactors = F)
@@ -19,7 +22,6 @@ names(zero) <- c("MSH","MSBI","MSQ","MSB")
 #Site based function to create site based payroll, zero and jc dictionary
 rightsourcing <- function(Site){
   
-  library(anytime)
   #Read in Site's previous month zero file
   message("Select Site's most recent zero file")
   previous_zero <- read.csv(file.choose(),stringsAsFactors = F, header = F)
@@ -92,6 +94,7 @@ rightsourcing <- function(Site){
         distinct()
       jcdict1 <-  jcdict1 %>%
         left_join(conversion,by=c("Dept"="Dept")) %>%
+        filter(!is.na(Oracle)) %>%
         select(SYSTEM,HOSP,Oracle,JobTitle) %>%
         rename(Dept = Oracle)
       dict[[i]] <- jcdict1
@@ -122,6 +125,7 @@ rightsourcing <- function(Site){
         distinct()
       jcdict3 <-  jcdict3 %>%
         left_join(conversion,by=c("Dept"="Dept")) %>%
+        filter(!is.na(Oracle)) %>%
         select(SYSTEM,HOSP,Oracle,JobTitle) %>%
         rename(Dept = Oracle)
       dict[[i]] <- jcdict3
@@ -300,7 +304,7 @@ dictionary <- function(){
   colnames(jc) <- c("JobTitle","JobCode")
   sys_dict = do.call("rbind",dict)
   if(!is.null(sys_dict)){
-    sys_jc <- codes <- sys_dict %>% 
+    sys_jc <- sys_dict %>% 
       select(JobTitle) %>%
       distinct()
     if(nrow(sys_jc) != 0){
