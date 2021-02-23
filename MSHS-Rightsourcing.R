@@ -319,9 +319,9 @@ dictionary <- function(){
           paste("R000",j,sep="")
         })
       }
-      #Overwrite Jobcode table
-      setwd("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/")
-      write.table(jc,file="Rightsource Job Code.csv",sep=",",col.names=F,row.names=F)
+      # #Overwrite Jobcode table
+      # setwd("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/")
+      # write.table(jc,file="Rightsource Job Code.csv",sep=",",col.names=F,row.names=F)
     }
     for(x in 1:length(dict)){
       if(!is.null(dict[[x]])){
@@ -338,6 +338,7 @@ dictionary <- function(){
       export <<- export
     }
   }
+  return(jc)
 }
 #system function combines site based payroll, zero and jc dictionary exports in system level
 system <- function(){
@@ -357,6 +358,8 @@ system <- function(){
 ##Create save function for system and site exports if they exist
 save <- function(){
   library(anytime)
+  #save new rightsourcing jobcode list
+  write.table(jc,file="J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/Rightsource Job Code.csv",sep=",",col.names=F,row.names=F)
   #save system and site exports if they exist
   if(exists("sys_export")){
     start <- min(anytime(sys_export$start))
@@ -561,7 +564,7 @@ rightsourcing("MSQ")
 rightsourcing("MSB")
 
 #Create new job codes and incorporate to dictionaries and uploads
-dictionary()
+jc <- dictionary()
 
 #if rightsourcing() was run for multiple sites then create system payroll, zero and jc dictionary
 system()
