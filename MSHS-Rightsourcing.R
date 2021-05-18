@@ -19,6 +19,9 @@ names(export) <- c("MSH","MSBI","MSQ","MSB")
 zero <- vector(mode = "list", length = 4)
 names(zero) <- c("MSH","MSBI","MSQ","MSB")
 
+# for testing purposes:
+# Site <- "MSBI"
+
 #Site based function to create site based payroll, zero and jc dictionary
 rightsourcing <- function(Site){
   
@@ -37,11 +40,13 @@ rightsourcing <- function(Site){
     conversion <- read.csv("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSHQ Code Conversion.csv",colClasses = c("character","character"))
   } else if(Site == "MSBI"){
     i <-  2
+    conversion <- read.csv("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSBIB Code Conversion.csv",colClasses = c("character","character"))
   } else if(Site == "MSQ"){
     i <- 3
     conversion <- read.csv("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSHQ Code Conversion.csv",colClasses = c("character","character"))
   } else if(Site == "MSB"){
     i <- 4
+    conversion <- read.csv("J:/deans/Presidents/SixSigma/MSHS Productivity/Productivity/Labor - Data/Rightsourcing Labor/MSBIB Code Conversion.csv",colClasses = c("character","character"))
   }
   
   #set location and Hospital ID based on Site input
@@ -115,6 +120,11 @@ rightsourcing <- function(Site){
         mutate(SYSTEM = 729805, HOSP = "630571") %>%
         select(SYSTEM,HOSP,Dept,JobTitle) %>%
         distinct()
+      jcdict2 <-  jcdict2 %>%
+        left_join(conversion,by=c("Dept"="Dept")) %>%
+        filter(!is.na(Oracle)) %>%
+        select(SYSTEM,HOSP,Oracle,JobTitle) %>%
+        rename(Dept = Oracle)
       dict[[i]] <- jcdict2
       dict <<- dict
     } else if(i == 3){
@@ -131,7 +141,7 @@ rightsourcing <- function(Site){
       dict[[i]] <- jcdict3
       dict <<- dict
     } else if(i == 4){
-      #MSBI
+      #MSB
       library(stringr)
       newright$Dept[str_length(newright$Dept)==30] <- str_c(
         str_sub(newright$Dept[str_length(newright$Dept)==30], 1, 4),
@@ -146,6 +156,11 @@ rightsourcing <- function(Site){
         mutate(SYSTEM = 729805, HOSP = "630571") %>%
         select(SYSTEM,HOSP,Dept,JobTitle) %>%
         distinct() 
+      jcdict4<-  jcdict4 %>%
+        left_join(conversion,by=c("Dept"="Dept")) %>%
+        filter(!is.na(Oracle)) %>%
+        select(SYSTEM,HOSP,Oracle,JobTitle) %>%
+        rename(Dept = Oracle)
       dict[[i]] <- jcdict4
       dict <<- dict
     }
@@ -193,7 +208,7 @@ rightsourcing <- function(Site){
       str_sub(right$Dept[str_length(right$Dept)==32], 14, 15),
       str_sub(right$Dept[str_length(right$Dept)==32], 17, 20))
     
-    export2 <-  data.frame(partner="729805",hospital=Hosp,home="1010101010",
+    export2 <-  data.frame(partner="729805",hospital=Hosp,home="900000040490000",
                            hosp=Hosp,work=right$Dept,start=as.Date(right$`Earnings.E.D`)-6,
                            end=as.Date(right$`Earnings.E.D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
@@ -203,6 +218,12 @@ rightsourcing <- function(Site){
                            "/",substr(export2$start,start=1,stop=4),sep="")
     export2$end <- paste(substr(export2$end,start=6,stop=7),"/",substr(export2$end,start=9,stop=10),
                          "/",substr(export2$end,start=1,stop=4),sep="")
+    export2 <- export2 %>%
+      left_join(conversion,by=c("work" = "Dept")) %>%
+      select(c(1:4,16,6:15)) %>%
+      rename(work = Oracle) %>%
+      filter(!is.na(work),
+             work != "DELETE")
     export2 <<- export2
     export[[i]] <- export2
     export <<- export
@@ -243,7 +264,7 @@ rightsourcing <- function(Site){
       str_sub(right$Dept[str_length(right$Dept)==32], 14, 15),
       str_sub(right$Dept[str_length(right$Dept)==32], 17, 20))
     
-    export4 <-  data.frame(partner="729805",hospital=Hosp,home="1010101020",
+    export4 <-  data.frame(partner="729805",hospital=Hosp,home="900000040790000",
                            hosp=Hosp,work=right$Dept,start=as.Date(right$`Earnings.E.D`)-6,
                            end=as.Date(right$`Earnings.E.D`),EmpCode=paste0(substr(right$Worker,start=1,stop=12),str_extract(right$Hours,"[^.]+")),
                            name=right$Worker,budget="0",JobCode=right$JobCode,paycode="AG1",
@@ -253,6 +274,12 @@ rightsourcing <- function(Site){
                            "/",substr(export4$start,start=1,stop=4),sep="")
     export4$end <- paste(substr(export4$end,start=6,stop=7),"/",substr(export4$end,start=9,stop=10),
                          "/",substr(export4$end,start=1,stop=4),sep="")
+    export4 <- export4 %>%
+      left_join(conversion,by=c("work" = "Dept")) %>%
+      select(c(1:4,16,6:15)) %>%
+      rename(work = Oracle) %>%
+      filter(!is.na(work),
+             work != "DELETE")
     export4 <<- export4
     export[[i]] <- export4
     export <<- export
