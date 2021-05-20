@@ -3,9 +3,11 @@
 library(anytime)
 library(tidyr)
 
+def_dir <- "J:\\deans\\Presidents\\SixSigma\\MSHS Productivity\\Productivity\\Labor - Data\\Rightsourcing Labor\\Source Data"
+
 #Read raw excel file from rightsourcing - file needs to be "export table" format
 message("Select most recent raw file")
-right <- read.csv(file.choose(), fileEncoding = "UTF-16LE",sep='\t',header=T,stringsAsFactors = F)
+right <- read.csv(choose.files(default = def_dir), fileEncoding = "UTF-16LE",sep='\t',header=T,stringsAsFactors = F)
 #right <- read.csv(file.choose(),header = T,stringsAsFactors = F)
 
 ##################################################################################################
@@ -20,18 +22,18 @@ zero <- vector(mode = "list", length = 4)
 names(zero) <- c("MSH","MSBI","MSQ","MSB")
 
 # for testing purposes:
-# Site <- "MSBI"
+Site <- "MSBI"
 
 #Site based function to create site based payroll, zero and jc dictionary
 rightsourcing <- function(Site){
   
   #Read in Site's previous month zero file
   message("Select Site's most recent zero file")
-  previous_zero <- read.csv(file.choose(),stringsAsFactors = F, header = F)
+  previous_zero <- read.csv(choose.files(default = def_dir),stringsAsFactors = F, header = F)
   previous_zero$V6 <- anytime(previous_zero$V6)
   #Read in Site's previous 2 month upload
   message("Select Site's most recent Rightsourcing upload")
-  previous_site <- read.csv(file.choose(),stringsAsFactors = F, header = F)
+  previous_site <- read.csv(choose.files(default = def_dir),stringsAsFactors = F, header = F)
   previous_site$V6 <- anytime(previous_site$V6)
   
   #if statement to tell code which site we are evaluating
@@ -99,7 +101,10 @@ rightsourcing <- function(Site){
         distinct()
       jcdict1 <-  jcdict1 %>%
         left_join(conversion,by=c("Dept"="Dept")) %>%
-        filter(!is.na(Oracle)) %>%
+        mutate(Oracle = case_when(
+          is.na(Oracle) ~ "101010101010101",
+          Oracle = "DELETE" ~ "101010101010101",
+          TRUE ~ Oracle)) %>%
         select(SYSTEM,HOSP,Oracle,JobTitle) %>%
         rename(Dept = Oracle)
       dict[[i]] <- jcdict1
@@ -122,7 +127,10 @@ rightsourcing <- function(Site){
         distinct()
       jcdict2 <-  jcdict2 %>%
         left_join(conversion,by=c("Dept"="Dept")) %>%
-        filter(!is.na(Oracle)) %>%
+        mutate(Oracle = case_when(
+          is.na(Oracle) ~ "900000040490000",
+          Oracle = "DELETE" ~ "900000040490000",
+          TRUE ~ Oracle)) %>%
         select(SYSTEM,HOSP,Oracle,JobTitle) %>%
         rename(Dept = Oracle)
       dict[[i]] <- jcdict2
@@ -135,7 +143,10 @@ rightsourcing <- function(Site){
         distinct()
       jcdict3 <-  jcdict3 %>%
         left_join(conversion,by=c("Dept"="Dept")) %>%
-        filter(!is.na(Oracle)) %>%
+        mutate(Oracle = case_when(
+          is.na(Oracle) ~ "101010101010102",
+          Oracle = "DELETE" ~ "101010101010102",
+          TRUE ~ Oracle)) %>%
         select(SYSTEM,HOSP,Oracle,JobTitle) %>%
         rename(Dept = Oracle)
       dict[[i]] <- jcdict3
@@ -158,7 +169,10 @@ rightsourcing <- function(Site){
         distinct() 
       jcdict4<-  jcdict4 %>%
         left_join(conversion,by=c("Dept"="Dept")) %>%
-        filter(!is.na(Oracle)) %>%
+        mutate(Oracle = case_when(
+          is.na(Oracle) ~ "900000040790000",
+          Oracle = "DELETE" ~ "900000040790000",
+          TRUE ~ Oracle)) %>%
         select(SYSTEM,HOSP,Oracle,JobTitle) %>%
         rename(Dept = Oracle)
       dict[[i]] <- jcdict4
@@ -189,8 +203,10 @@ rightsourcing <- function(Site){
       left_join(conversion,by=c("work" = "Dept")) %>%
       select(c(1:4,16,6:15)) %>%
       rename(work = Oracle) %>%
-      filter(!is.na(work),
-             work != "DELETE")
+      mutate(work = case_when(
+        is.na(work) ~ "101010101010101",
+        Oracle == "DELETE" ~ "101010101010101",
+        TRUE ~ Oracle))
     export1 <<- export1
     export[[i]] <- export1
     export <<- export
@@ -222,8 +238,10 @@ rightsourcing <- function(Site){
       left_join(conversion,by=c("work" = "Dept")) %>%
       select(c(1:4,16,6:15)) %>%
       rename(work = Oracle) %>%
-      filter(!is.na(work),
-             work != "DELETE")
+      mutate(work = case_when(
+        is.na(work) ~ "900000040490000",
+        work == "DELETE" ~ "900000040490000",
+        TRUE ~ work))
     export2 <<- export2
     export[[i]] <- export2
     export <<- export
@@ -245,8 +263,10 @@ rightsourcing <- function(Site){
       left_join(conversion,by=c("work" = "Dept")) %>%
       select(c(1:4,16,6:15)) %>%
       rename(work = Oracle) %>%
-      filter(!is.na(work),
-             work != "DELETE")
+      mutate(work = case_when(
+        is.na(work) ~ "101010101010102",
+        Oracle == "DELETE" ~ "101010101010102",
+        TRUE ~ Oracle))
     export3 <<- export3
     export[[i]] <- export3
     export <<- export
@@ -278,8 +298,10 @@ rightsourcing <- function(Site){
       left_join(conversion,by=c("work" = "Dept")) %>%
       select(c(1:4,16,6:15)) %>%
       rename(work = Oracle) %>%
-      filter(!is.na(work),
-             work != "DELETE")
+      mutate(work = case_when(
+        is.na(work) ~ "900000040790000",
+        Oracle == "DELETE" ~ "900000040790000",
+        TRUE ~ Oracle))
     export4 <<- export4
     export[[i]] <- export4
     export <<- export
