@@ -21,9 +21,6 @@ names(export) <- c("MSH","MSBI","MSQ","MSB")
 zero <- vector(mode = "list", length = 4)
 names(zero) <- c("MSH","MSBI","MSQ","MSB")
 
-# for testing purposes:
-Site <- "MSBI"
-
 #Site based function to create site based payroll, zero and jc dictionary
 rightsourcing <- function(Site){
   
