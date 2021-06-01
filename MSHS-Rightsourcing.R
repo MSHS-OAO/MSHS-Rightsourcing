@@ -100,7 +100,7 @@ rightsourcing <- function(Site){
         left_join(conversion,by=c("Dept"="Dept")) %>%
         mutate(Oracle = case_when(
           is.na(Oracle) ~ "101010101010101",
-          Oracle = "DELETE" ~ "101010101010101",
+          Oracle == "DELETE" ~ "101010101010101",
           TRUE ~ Oracle)) %>%
         select(SYSTEM,HOSP,Oracle,JobTitle) %>%
         rename(Dept = Oracle)
@@ -126,7 +126,7 @@ rightsourcing <- function(Site){
         left_join(conversion,by=c("Dept"="Dept")) %>%
         mutate(Oracle = case_when(
           is.na(Oracle) ~ "900000040490000",
-          Oracle = "DELETE" ~ "900000040490000",
+          Oracle == "DELETE" ~ "900000040490000",
           TRUE ~ Oracle)) %>%
         select(SYSTEM,HOSP,Oracle,JobTitle) %>%
         rename(Dept = Oracle)
@@ -142,7 +142,7 @@ rightsourcing <- function(Site){
         left_join(conversion,by=c("Dept"="Dept")) %>%
         mutate(Oracle = case_when(
           is.na(Oracle) ~ "101010101010102",
-          Oracle = "DELETE" ~ "101010101010102",
+          Oracle == "DELETE" ~ "101010101010102",
           TRUE ~ Oracle)) %>%
         select(SYSTEM,HOSP,Oracle,JobTitle) %>%
         rename(Dept = Oracle)
@@ -168,7 +168,7 @@ rightsourcing <- function(Site){
         left_join(conversion,by=c("Dept"="Dept")) %>%
         mutate(Oracle = case_when(
           is.na(Oracle) ~ "900000040790000",
-          Oracle = "DELETE" ~ "900000040790000",
+          Oracle == "DELETE" ~ "900000040790000",
           TRUE ~ Oracle)) %>%
         select(SYSTEM,HOSP,Oracle,JobTitle) %>%
         rename(Dept = Oracle)
@@ -196,14 +196,14 @@ rightsourcing <- function(Site){
     export1$end <- paste(substr(export1$end,start=6,stop=7),"/",substr(export1$end,start=9,stop=10),
                          "/",substr(export1$end,start=1,stop=4),sep="")
     export1$work <- as.character(export1$work)
-    export1 <- export1 %>%
+    test <- export1 %>%
       left_join(conversion,by=c("work" = "Dept")) %>%
       select(c(1:4,16,6:15)) %>%
       rename(work = Oracle) %>%
       mutate(work = case_when(
         is.na(work) ~ "101010101010101",
-        Oracle == "DELETE" ~ "101010101010101",
-        TRUE ~ Oracle))
+        work == "DELETE" ~ "101010101010101",
+        TRUE ~ work))
     export1 <<- export1
     export[[i]] <- export1
     export <<- export
@@ -262,8 +262,8 @@ rightsourcing <- function(Site){
       rename(work = Oracle) %>%
       mutate(work = case_when(
         is.na(work) ~ "101010101010102",
-        Oracle == "DELETE" ~ "101010101010102",
-        TRUE ~ Oracle))
+        work == "DELETE" ~ "101010101010102",
+        TRUE ~ work))
     export3 <<- export3
     export[[i]] <- export3
     export <<- export
@@ -297,8 +297,8 @@ rightsourcing <- function(Site){
       rename(work = Oracle) %>%
       mutate(work = case_when(
         is.na(work) ~ "900000040790000",
-        Oracle == "DELETE" ~ "900000040790000",
-        TRUE ~ Oracle))
+        work == "DELETE" ~ "900000040790000",
+        TRUE ~ work))
     export4 <<- export4
     export[[i]] <- export4
     export <<- export
