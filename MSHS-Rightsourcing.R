@@ -196,7 +196,7 @@ rightsourcing <- function(Site){
     export1$end <- paste(substr(export1$end,start=6,stop=7),"/",substr(export1$end,start=9,stop=10),
                          "/",substr(export1$end,start=1,stop=4),sep="")
     export1$work <- as.character(export1$work)
-    test <- export1 %>%
+    export1 <- export1 %>%
       left_join(conversion,by=c("work" = "Dept")) %>%
       select(c(1:4,16,6:15)) %>%
       rename(work = Oracle) %>%
